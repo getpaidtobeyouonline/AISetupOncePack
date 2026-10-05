@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI Setup Once Pack</title>
+<meta name="description" content="Eight questions, once. Then every tool in the bundle knows who you are, what you do and how you want to be written for, so you stop explaining yourself at the start of every single conversation.">
+<meta name="author" content="Bansari Panchal">
+<meta name="theme-color" content="#1a0a2e">
+<style>
+:root{
+  --ink:#1a0a2e;--deep:#2a1a4a;--card:#3d2660;--purple:#7c4dde;--purple2:#9b6cff;
+  --gold:#f0c24b;--mint:#4ade80;--sky:#60a5fa;
+  --fg:#ffffff;--mut:#b9abd6;--line:rgba(255,255,255,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:var(--ink);color:var(--fg);
+  font:17px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background-image:radial-gradient(900px 600px at 15% -5%,rgba(124,77,222,.30),transparent 60%),
+                   radial-gradient(760px 520px at 100% 108%,rgba(96,165,250,.16),transparent 60%);
+  background-attachment:fixed}
+.shell{max-width:720px;margin:0 auto;padding:22px 18px 40px;min-height:100%;
+  display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.tag{font-size:10.5px;letter-spacing:.15em;font-weight:800;text-transform:uppercase;
+  color:var(--gold);white-space:nowrap}
+.dots{display:flex;gap:6px;margin-left:auto}
+.dots i{width:22px;height:4px;border-radius:4px;background:var(--line);transition:background .25s}
+.dots i.on{background:var(--purple2)}
+.dots i.done{background:var(--mint)}
+main{flex:1;display:flex;flex-direction:column;justify-content:center}
+.screen{display:none;animation:in .32s ease both}
+.screen.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:40px;line-height:1.1;margin:0 0 14px;letter-spacing:-.01em}
+h2{font-family:Georgia,serif;font-size:29px;line-height:1.2;margin:0 0 10px}
+.lede{color:var(--mut);font-size:17px;margin:0 0 26px;max-width:46ch}
+.hint{color:var(--mut);font-size:14.5px;margin:0 0 20px}
+.step-no{font-size:11px;letter-spacing:.14em;font-weight:800;color:var(--purple2);
+  text-transform:uppercase;margin-bottom:10px}
+.opts{display:grid;gap:11px;margin:4px 0 8px}
+.opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;cursor:pointer;
+  background:rgba(255,255,255,.055);border:1.5px solid var(--line);border-radius:13px;
+  padding:16px 18px;color:var(--fg);font:500 16.5px inherit;transition:.16s}
+.opt:hover{background:rgba(255,255,255,.1);border-color:var(--purple2);transform:translateY(-1px)}
+.opt.sel{background:rgba(124,77,222,.26);border-color:var(--purple2)}
+.opt .tick{width:21px;height:21px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;
+  display:grid;place-items:center;font-size:12px;color:var(--ink)}
+.opt.sel .tick{background:var(--purple2);border-color:var(--purple2)}
+.opt.sel .tick::after{content:"\2713";color:#fff;font-weight:700}
+input[type=text],textarea{width:100%;background:rgba(255,255,255,.06);color:var(--fg);
+  border:1.5px solid var(--line);border-radius:13px;padding:16px 18px;font:16.5px/1.5 inherit}
+textarea{min-height:120px;resize:vertical}
+input::placeholder,textarea::placeholder{color:#8b7fae}
+input:focus,textarea:focus{outline:0;border-color:var(--purple2);background:rgba(255,255,255,.09)}
+.nav{display:flex;gap:11px;align-items:center;margin-top:24px;flex-wrap:wrap}
+button.go{background:var(--purple);color:#fff;border:0;border-radius:12px;padding:15px 30px;
+  font:700 16.5px inherit;cursor:pointer;transition:.16s}
+button.go:hover{background:var(--purple2)}
+button.go[disabled]{opacity:.34;cursor:not-allowed}
+button.back{background:transparent;color:var(--mut);border:0;font:600 15px inherit;cursor:pointer;padding:15px 4px}
+button.back:hover{color:var(--fg)}
+.out{background:#120822;border:1px solid var(--line);border-radius:14px;padding:22px;
+  font:14.5px/1.72 "SF Mono",Menlo,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;
+  max-height:46vh;overflow:auto}
+.after{margin:22px 0 0;padding:0;list-style:none}
+.after li{display:flex;gap:12px;padding:9px 0;color:var(--mut);font-size:15.5px}
+.after li b{color:var(--gold);flex:0 0 auto;font-weight:800}
+footer{color:#7b6f99;font-size:12px;text-align:center;margin-top:34px;padding-top:16px;
+  border-top:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:var(--mint);color:#06281a;font-weight:700;padding:12px 22px;border-radius:30px;
+  opacity:0;pointer-events:none;transition:.26s;font-size:15px}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media(max-width:560px){h1{font-size:31px}h2{font-size:24px}body{font-size:16px}
+  .shell{padding:18px 15px 32px}}
+@media print{body{background:#fff;color:#000}.nav,.dots,.toast{display:none}
+  .screen{display:block!important}.out{background:#fff;color:#000;border:1px solid #999}}
+
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 16px}
+.tab{background:rgba(255,255,255,.055);border:1.5px solid var(--line);color:var(--mut);
+  border-radius:10px;padding:10px 15px;font:700 14px inherit;cursor:pointer}
+.tab:hover{color:var(--fg)}
+.tab.on{background:rgba(124,77,222,.3);border-color:var(--purple2);color:#fff}
+.pane{display:none}.pane.on{display:block}
+.where{list-style:none;padding:0;margin:0}
+.where li{padding:15px 0;border-bottom:1px solid var(--line)}
+.where li:last-child{border-bottom:0}
+.where b{display:block;color:var(--gold);font-size:15.5px;margin-bottom:3px}
+.where span{color:var(--mut);font-size:15px}
+.half{margin-bottom:12px}
+.half h3{font:800 11px inherit;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--purple2);margin:0 0 7px}
+.kicker{font-size:11.5px;letter-spacing:.18em;font-weight:800;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px}
+.howto{margin-top:34px;padding-top:28px;border-top:1px solid var(--line)}
+.sub{font-family:Georgia,serif;font-size:19px;color:var(--fg);margin:0 0 4px}
+.note{background:rgba(255,255,255,.05);border-radius:12px;padding:15px 17px;
+  color:var(--mut);font-size:15px;margin-top:16px}
+</style></head><body>
+<div class="shell">
+  <div class="top"><span class="tag">AI MADE SIMPLE</span>
+    <div class="dots" id="dots"></div></div>
+  <main id="main"></main>
+  <footer>GetPaidToBeYouOnline</footer>
+</div>
+<div class="toast" id="toast">Copied</div>
+<script>const T={"id": "set-up-once", "title": "Set up once, and never explain yourself again", "lede": "Eight questions, once. Then every tool in the bundle knows who you are, what you do and how you want to be written for, so you stop explaining yourself at the start of every single conversation.", "cta": "Set me up", "kicker": "AI SETUP ONCE PACK", "steps": [{"id": "name", "kind": "text", "q": "What should it call you?", "hint": "Your first name is enough.", "placeholder": "Your first name"}, {"id": "work", "kind": "textarea", "q": "What do you actually do?", "hint": "In your own words, the way you would say it to somebody at a party. This is the single most useful thing you will type today.", "placeholder": "What you do, who you do it for, and anything about how you work. For example: I run a home baking business and take custom cake orders, mostly birthdays, working on my own."}, {"id": "audience", "kind": "textarea", "q": "Who are you usually writing for?", "hint": "The people who read what you write. Be specific about what they are like.", "placeholder": "Who reads what you write and what they are like. For example: parents ordering a cake, usually in a hurry, who want to know the price and the date without a lot of back and forth."}, {"id": "tone", "kind": "multi", "q": "How should it sound when it writes for you?", "hint": "Pick as many as fit. These are the ones people most often wish they had set.", "options": ["Warm and direct", "Plain English, no jargon", "Short sentences", "Confident, not pushy", "Practical and specific", "Gently funny", "Calm and reassuring"]}, {"id": "never", "kind": "multi", "q": "What should it never do?", "hint": "Every one of these is something people quietly rewrite by hand, every single time, because they never thought to ask.", "options": ["Use American spelling", "Use dashes instead of commas", "Use hype words like unleash, dive in or game-changer", "Open by telling me what a great question that was", "Use emoji", "Pad the answer out to look thorough", "Agree with me when I am wrong", "Invent facts or sources"]}, {"id": "spelling", "kind": "choice", "q": "Which spelling do you use?", "options": ["British", "American", "Australian", "Canadian"]}, {"id": "now", "kind": "textarea", "optional": true, "q": "What are you working on at the moment?", "hint": "Optional, and worth doing. Come back and change this whenever it changes. It is what stops the answers being generic.", "placeholder": "The project, the launch or the problem taking up most of your time right now. For example: building a website, and trying to get regular orders rather than one-offs."}, {"id": "about", "kind": "textarea", "optional": true, "q": "Anything else it genuinely needs to know about you?", "hint": "Optional. The things that change how an answer should be written rather than what it says.", "placeholder": "Anything that changes how an answer should be written for you. For example: English is my second language, or I would rather be told plainly when something will not work."}], "result": {"heading": "", "template": "", "after": []}};const RESULT_HTML="\n<section class=\"screen\" id=\"s-out\">\n  <h2>Your set up, written once</h2>\n  <p class=\"hint\">Paste this into each tool and every answer from now on arrives\n    already sounding like you. Come back and change it whenever your work changes.</p>\n  <div class=\"tabs\">\n    <button class=\"tab on\" data-p=\"full\">The full version</button>\n    <button class=\"tab\" data-p=\"split\">Split in two</button>\n    <button class=\"tab\" data-p=\"short\">The short version</button>\n  </div>\n\n  <div class=\"pane on\" id=\"p-full\">\n    <div class=\"out\" id=\"o-full\"></div>\n    <div class=\"nav\"><button class=\"go\" data-copy=\"o-full\">Copy it</button>\n      <button class=\"back\" id=\"again\">Start again</button></div>\n    <div class=\"note\">Use this where a tool gives you one box to write in.</div>\n  </div>\n\n  <div class=\"pane\" id=\"p-split\">\n    <div class=\"half\"><h3>Part one, for the box about you</h3>\n      <div class=\"out\" id=\"o-p1\"></div>\n      <div class=\"nav\"><button class=\"go\" data-copy=\"o-p1\">Copy part one</button></div></div>\n    <div class=\"half\"><h3>Part two, for the box about how it should reply</h3>\n      <div class=\"out\" id=\"o-p2\"></div>\n      <div class=\"nav\"><button class=\"go\" data-copy=\"o-p2\">Copy part two</button></div></div>\n    <div class=\"note\">Some tools split this into two boxes. This is the same\n      thing, cut in the right place.</div>\n  </div>\n\n  <div class=\"pane\" id=\"p-short\">\n    <div class=\"out\" id=\"o-short\"></div>\n    <div class=\"nav\"><button class=\"go\" data-copy=\"o-short\">Copy it</button></div>\n    <div class=\"note\">For tools with a small box, and for pasting at the top of\n      a conversation when there is no setting at all.</div>\n  </div>\n\n  <div class=\"howto\">\n    <h3 class=\"sub\">Add the instructions into your AI tool</h3>\n    <p class=\"hint\">Copy the block above first. Then these same six steps work on\n      every one of them.</p>\n    <ul class=\"after\"><li><b>1</b><span>Open the tool and find its settings. On a phone this is usually behind your initial or your picture.</span></li><li><b>2</b><span>Look for anything that mentions instructions, preferences, personalisation, memory, or what it should know about you. Every tool words it differently, and the wording changes, so go by what it means rather than what it is called.</span></li><li><b>3</b><span>Paste the full version in, and save it.</span></li><li><b>4</b><span>Start a new conversation. Settings like this apply to new chats, not to one you already have open, so the old chat will carry on as before.</span></li><li><b>5</b><span>Ask it something ordinary and see whether the answer sounds like you. If it does not, the usual reason is that the what do you do box was too short.</span></li><li><b>6</b><span>Come back and change it whenever your work changes. It takes a minute and it is the difference between generic answers and useful ones.</span></li></ul>\n    <h3 class=\"sub\" style=\"margin-top:28px\">What to look for in each one</h3>\n    <ul class=\"where\"><li><b>Claude</b><span>Look for the settings area where you can tell it how you want to be answered. If you use Projects, instructions set there apply to every chat inside that project, which is the tidiest place for the full version.</span></li><li><b>ChatGPT</b><span>It splits this into two boxes: one for who you are, one for how you want it to reply. Use the split version below, part one in the first box and part two in the second.</span></li><li><b>Gemini</b><span>Look for saved information about you in settings. For a setup you want to keep separate, make a Gem and put the full version in its instructions.</span></li><li><b>Gemini Notebook</b><span>This one answers from the sources you give it, so there is no profile to fill in. Paste the short version at the top of your question instead.</span></li><li><b>Perplexity</b><span>Look in settings for where it keeps what it knows about you.</span></li><li><b>Meta AI</b><span>No box of this kind. Paste the short version at the top of your first message.</span></li><li><b>Microsoft Copilot</b><span>Look in settings for what it is allowed to remember about you, and put the full version there.</span></li><li><b>DeepSeek</b><span>No box of this kind. Paste the short version at the top of your first message.</span></li></ul>\n    <div class=\"note\">If you cannot find the setting on any tool, nothing is lost. Paste the short version at the top of your first message instead. You do it once per conversation and everything after it is shaped by it.</div>\n  </div>\n</section>";</script>
+<script>
+function joinList(v,fallback){
+  if(!v||!v.length)return fallback;
+  const a=Array.isArray(v)?v.slice():[v];
+  if(a.length===1)return a[0].toLowerCase();
+  return a.slice(0,-1).map(x=>x.toLowerCase()).join(', ')+' and '+a[a.length-1].toLowerCase();
+}
+function val(id,fallback){
+  let v=A[id];
+  if(Array.isArray(v))v=v.join(', ');
+  v=(v===undefined||v===null)?'':String(v).trim();
+  return v||fallback;
+}
+function blocks(){
+  const name=val('name','[your name]');
+  const work=val('work','[what you do]');
+  const aud=val('audience','[who you write for]');
+  const tone=joinList(A.tone,'warm and direct, in plain English');
+  const never=joinList(A.never,'use hype words or American spelling');
+  const spell=val('spelling','British');
+  const now=val('now','');
+  const about=val('about','');
+
+  let p1='About me\n';
+  p1+='My name is '+name+'.\n';
+  p1+='What I do: '+work+'\n';
+  p1+='Who I am usually writing for: '+aud;
+  if(now)p1+='\n\nWhat I am working on at the moment:\n'+now;
+  if(about)p1+='\n\nOther things worth knowing:\n'+about;
+
+  let p2='How to write for me\n';
+  p2+='Sound: '+tone+'.\n';
+  p2+='Spelling: '+spell+' English throughout.\n';
+  p2+='Never: '+never+'.\n\n';
+  p2+='If something I ask for will not work, say so plainly before you do it.\n';
+  p2+='If you need one piece of information to answer properly, ask me for it\n';
+  p2+='instead of guessing.\n';
+  p2+='Give me the answer first and the explanation after it, not the other way round.';
+
+  const full=p1+'\n\n'+p2;
+  const short='I am '+name+'. '+work+' I usually write for '+aud+
+    '\nWrite in '+spell+' English, '+tone+'. Never '+never+
+    '.\nSay so plainly if something will not work, and ask if you need one more detail.';
+  return {full,p1,p2,short};
+}
+function renderResult(){
+  const b=blocks();
+  document.getElementById('o-full').textContent=b.full;
+  document.getElementById('o-p1').textContent=b.p1;
+  document.getElementById('o-p2').textContent=b.p2;
+  document.getElementById('o-short').textContent=b.short;
+}
+function wireTabs(){
+  const tabs=[...document.querySelectorAll('.tab')];
+  tabs.forEach(t=>t.onclick=()=>{
+    tabs.forEach(x=>x.classList.toggle('on',x===t));
+    document.querySelectorAll('.pane').forEach(p=>
+      p.classList.toggle('on',p.id==='p-'+t.dataset.p));
+  });
+  document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{
+    const t=document.getElementById(b.dataset.copy).textContent;
+    try{await navigator.clipboard.writeText(t)}
+    catch(e){const r=document.createRange();r.selectNode(document.getElementById(b.dataset.copy));
+      getSelection().removeAllRanges();getSelection().addRange(r);document.execCommand('copy')}
+    const x=document.getElementById('toast');x.classList.add('on');
+    setTimeout(()=>x.classList.remove('on'),1400);
+  });
+}
+</script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const KEY='aimt-'+T.id;
+let A={},i=0;
+try{A=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){A={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(A))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const N=T.steps.length;
+$('#dots').innerHTML=Array.from({length:N+1},()=>'<i></i>').join('');
+
+function screens(){
+  let h=`<section class="screen" id="s-intro">
+      <div class="kicker">${esc(T.kicker||'')}</div>
+      <h1>${esc(T.title)}</h1><p class="lede">${esc(T.lede)}</p>
+      <div class="nav"><button class="go" id="start">${esc(T.cta||'Start')}</button></div>
+    </section>`;
+  T.steps.forEach((s,n)=>{
+    h+=`<section class="screen" id="s-${n}">
+      <div class="step-no">Question ${n+1} of ${N}</div>
+      <h2>${esc(s.q)}</h2>`;
+    if(s.hint)h+=`<p class="hint">${esc(s.hint)}</p>`;
+    if(s.kind==='choice'||s.kind==='multi'){
+      h+='<div class="opts">'+s.options.map(o=>
+        `<button class="opt" data-v="${esc(o)}"><span class="tick"></span><span>${esc(o)}</span></button>`
+      ).join('')+'</div>';
+    }else if(s.kind==='textarea'){
+      h+=`<textarea id="f-${n}" placeholder="${esc(s.placeholder||'')}"></textarea>`;
+    }else{
+      h+=`<input type="text" id="f-${n}" placeholder="${esc(s.placeholder||'')}">`;
+    }
+    h+=`<div class="nav">
+        ${n?'<button class="back" data-go="'+(n-1)+'">Back</button>':'<button class="back" data-go="-1">Back</button>'}
+        <button class="go" data-next="${n}">${n===N-1?'See my prompt':'Next'}</button>
+      </div></section>`;
+  });
+  h+=RESULT_HTML;
+  $('#main').innerHTML=h;
+}
+
+function dots(){
+  $$('#dots i').forEach((d,k)=>{d.className=k<i?'done':(k===i?'on':'')});
+}
+
+function show(n){
+  i=n;
+  $$('.screen').forEach(s=>s.classList.remove('on'));
+  const id = n<0?'s-intro':(n>=N?'s-out':'s-'+n);
+  $('#'+id).classList.add('on');
+  if(n>=N)render();
+  dots();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function valid(n){
+  const s=T.steps[n];
+  if(s.optional)return true;
+  const v=A[s.id];
+  return s.kind==='multi' ? (v&&v.length) : !!(v&&String(v).trim());
+}
+
+function wire(){
+  $('#start').onclick=()=>show(0);
+  $$('.opt').forEach(b=>{
+    b.onclick=()=>{
+      const sec=b.closest('.screen'),n=+sec.id.split('-')[1],s=T.steps[n];
+      if(s.kind==='multi'){
+        const cur=new Set(A[s.id]||[]);
+        cur.has(b.dataset.v)?cur.delete(b.dataset.v):cur.add(b.dataset.v);
+        A[s.id]=[...cur];
+        [...sec.querySelectorAll('.opt')].forEach(o=>o.classList.toggle('sel',cur.has(o.dataset.v)));
+      }else{
+        A[s.id]=b.dataset.v;
+        [...sec.querySelectorAll('.opt')].forEach(o=>o.classList.toggle('sel',o===b));
+        setTimeout(()=>{if(valid(n))show(n+1)},190);
+      }
+      save();sync();
+    };
+  });
+  T.steps.forEach((s,n)=>{
+    const f=document.getElementById('f-'+n);
+    if(f)f.addEventListener('input',()=>{A[s.id]=f.value;save();sync()});
+  });
+  $$('[data-next]').forEach(b=>b.onclick=()=>{const n=+b.dataset.next;if(valid(n))show(n+1)});
+  $$('[data-go]').forEach(b=>b.onclick=()=>show(+b.dataset.go));
+  $('#again').onclick=()=>{A={};save();
+    $$('.opt').forEach(o=>o.classList.remove('sel'));
+    T.steps.forEach((s,n)=>{const f=document.getElementById('f-'+n);if(f)f.value=''});
+    sync();show(-1)};
+  wireTabs();
+}
+
+function restore(){
+  T.steps.forEach((s,n)=>{
+    const v=A[s.id];if(v===undefined)return;
+    const f=document.getElementById('f-'+n);
+    if(f){f.value=v;return}
+    const sec=document.getElementById('s-'+n);if(!sec)return;
+    const set=s.kind==='multi'?new Set(v):new Set([v]);
+    [...sec.querySelectorAll('.opt')].forEach(o=>o.classList.toggle('sel',set.has(o.dataset.v)));
+  });
+}
+
+function sync(){
+  $$('[data-next]').forEach(b=>{b.disabled=!valid(+b.dataset.next)});
+}
+
+function render(){renderResult()}
+
+screens();wire();restore();sync();
+show(Object.keys(A).length?0:-1);
+</script>
+</body></html>
